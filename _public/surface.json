@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "slug": "event-anmeldung",
+      "component": "EventAnmeldung",
+      "title": "Zum Event anmelden",
+      "link_param": {
+        "name": "event",
+        "entity": "events",
+        "label_field": "eventname"
+      },
+      "endpoints": [
+        {
+          "entity": "events",
+          "op": "list",
+          "fields": [
+            "eventname",
+            "eventart",
+            "beginn",
+            "ende",
+            "ort",
+            "gebuehr",
+            "eventstatus"
+          ],
+          "scope": "r.v_eventstatus == 'anmeldung_offen'",
+          "scope_description": "zeigt nur Events mit Status „Anmeldung offen“",
+          "max_records": 200,
+          "availability_fields": [
+            "eventstatus"
+          ]
+        },
+        {
+          "entity": "teilnehmer",
+          "op": "create",
+          "fields": [
+            "vorname",
+            "nachname",
+            "email",
+            "telefon",
+            "geburtsdatum",
+            "wohnort",
+            "skilllevel",
+            "stance",
+            "team",
+            "notfall_vorname",
+            "notfall_nachname",
+            "notfall_telefon"
+          ]
+        },
+        {
+          "entity": "anmeldungen",
+          "op": "create",
+          "fields": [
+            "event",
+            "teilnehmer",
+            "disziplin",
+            "bemerkung"
+          ],
+          "preset_fields": {
+            "anmeldestatus": "angemeldet",
+            "zahlungsstatus": "offen"
+          }
+        }
+      ]
+    }
+  ]
+}

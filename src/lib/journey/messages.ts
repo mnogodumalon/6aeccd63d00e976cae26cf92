@@ -35,6 +35,10 @@ export type MessageFieldKey<E extends EntityKey> = E extends keyof MessageFields
 
 export const REQUIRED_MESSAGES: { [E in EntityKey]?: Partial<Record<MessageFieldKey<E>, string>> } = {
   // <custom:messages>
+  veranstaltungsorte: { ortsname: "Bitte den Namen des Ortes eingeben.", stadt: "Bitte die Stadt eingeben." },
+  events: { eventname: "Bitte den Eventnamen eingeben.", eventart: "Bitte die Art des Events wählen.", beginn: "Bitte Datum und Uhrzeit des Beginns wählen.", ort: "Bitte einen Veranstaltungsort auswählen.", eventstatus: "Bitte einen Status wählen." },
+  teilnehmer: { vorname: "Bitte den Vornamen eingeben.", nachname: "Bitte den Nachnamen eingeben.", email: "Bitte die E-Mail-Adresse eingeben." },
+  anmeldungen: { event: "Bitte ein Event auswählen.", teilnehmer: "Bitte einen Teilnehmer auswählen.", anmeldestatus: "Bitte einen Anmeldestatus wählen." },
   // </custom:messages>
 };
 

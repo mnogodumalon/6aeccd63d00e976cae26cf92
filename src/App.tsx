@@ -18,6 +18,11 @@ const IntentFields = lazy(() => import('@/pages/IntentFields'));
 const IntentsAdmin = lazy(() => import('@/pages/IntentsAdmin'));
 const AppMap = lazy(() => import('@/pages/AppMap'));
 // <custom:imports>
+const IntentTeilnehmerAnmeldenPage = lazy(() => import('@/pages/intents/TeilnehmerAnmeldenPage'));
+import { DashboardSkeleton } from '@/components/DashboardStates';
+const IntentAnmeldungBestaetigenPage = lazy(() => import('@/pages/intents/AnmeldungBestaetigenPage'));
+const IntentZahlungErfassenPage = lazy(() => import('@/pages/intents/ZahlungErfassenPage'));
+const IntentEventAnlegenPage = lazy(() => import('@/pages/intents/EventAnlegenPage'));
 // </custom:imports>
 
 // Lazy: public pages live outside <Layout> and only load on /#/public/:slug —
@@ -95,6 +100,10 @@ export default function App() {
                 <Route path="verwaltung/oeffentliche-seiten" element={<PublicPagesAdmin />} />
                 <Route path="verwaltung/oeffentliche-seiten/:slug/felder" element={<PublicPageFields />} />
                 {/* <custom:routes> */}
+                <Route path="intents/teilnehmer-anmelden" element={<Suspense fallback={<DashboardSkeleton />}><IntentTeilnehmerAnmeldenPage /></Suspense>} />
+                <Route path="intents/anmeldung-bestaetigen" element={<Suspense fallback={<DashboardSkeleton />}><IntentAnmeldungBestaetigenPage /></Suspense>} />
+                <Route path="intents/zahlung-erfassen" element={<Suspense fallback={<DashboardSkeleton />}><IntentZahlungErfassenPage /></Suspense>} />
+                <Route path="intents/event-anlegen" element={<Suspense fallback={<DashboardSkeleton />}><IntentEventAnlegenPage /></Suspense>} />
                 {/* </custom:routes> */}
                 {/* An unknown hash (a bookmark from before a rebuild renamed the
                     flows, a mistyped link) must not be a blank page. */}

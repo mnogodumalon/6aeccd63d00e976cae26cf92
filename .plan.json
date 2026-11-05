@@ -1,0 +1,341 @@
+{
+  "version": 1,
+  "language": "de",
+  "understanding": {
+    "summary": "Du bekommst eine Verwaltung für Skateboard-Events: Veranstaltungsorte, Events mit Art, Beginn, Ende, Gebühr und Status, dazu Teilnehmer und ihre Anmeldungen. Anmeldungen halten Disziplin, Startnummer, Zahlungsstatus und Anmeldestatus (angemeldet, bestätigt, Warteliste, storniert) fest. Das Team sieht auf der Übersicht kommende Events, offene Anmeldungen und unbezahlte Gebühren. Interessierte können sich ohne Login über eine öffentliche Seite für ein Event anmelden.",
+    "outside_users": [
+      {
+        "who": "Teilnehmer",
+        "does": "melden sich für ein offenes Event an und geben ihre Daten ein"
+      }
+    ],
+    "roles": [
+      "Organisator",
+      "Eventteam"
+    ],
+    "main_tasks": [
+      "Events und Orte pflegen",
+      "Teilnehmer anmelden und Anmeldungen bestätigen",
+      "Zahlungen und Startnummern verfolgen",
+      "Warteliste und Auslastung im Blick behalten"
+    ],
+    "platform_roles": [
+      {
+        "persona": "Organisator",
+        "role": "administrator",
+        "apps": [
+          "veranstaltungsorte",
+          "events",
+          "teilnehmer",
+          "anmeldungen"
+        ]
+      },
+      {
+        "persona": "Eventteam",
+        "role": "datenverarbeitung",
+        "apps": [
+          "events",
+          "teilnehmer",
+          "anmeldungen"
+        ]
+      }
+    ],
+    "wish_kind": "plain",
+    "wish_signals": []
+  },
+  "flows": [
+    {
+      "slug": "teilnehmer-anmelden",
+      "label": {
+        "de": "Teilnehmer zu Event anmelden",
+        "en": "Register participant for event"
+      },
+      "description": "Ein Teilnehmer wird für ein offenes Event angemeldet. Bei Bedarf wird der Teilnehmer neu angelegt.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "teilnehmer",
+          "op": "create",
+          "when": "optional",
+          "fields": {
+            "vorname": "user",
+            "nachname": "user",
+            "email": "user",
+            "telefon": "user",
+            "geburtsdatum": "user",
+            "wohnort": "user",
+            "skilllevel": "user",
+            "stance": "user",
+            "team": "user",
+            "notfall_vorname": "user",
+            "notfall_nachname": "user",
+            "notfall_telefon": "user"
+          },
+          "multiple": false,
+          "needs": {},
+          "defaults": []
+        },
+        {
+          "entity": "anmeldungen",
+          "op": "create",
+          "when": "always",
+          "fields": {
+            "event": "picked",
+            "teilnehmer": "picked",
+            "anmeldedatum": "derived:today",
+            "disziplin": "user",
+            "zahlungsstatus": "fixed:offen",
+            "anmeldestatus": "fixed:angemeldet",
+            "bemerkung": "user"
+          },
+          "multiple": false,
+          "needs": {},
+          "defaults": []
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `teilnehmer-anmelden` — Teilnehmer zu Event anmelden\nEin Teilnehmer wird für ein offenes Event angemeldet. Bei Bedarf wird der Teilnehmer neu angelegt.\n\n## Your hook — import it, never rebuild what it owns\n`import { useTeilnehmerAnmeldenFlow } from '@/lib/journey/flows/TeilnehmerAnmelden';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: event, teilnehmer), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Offenes Event auswählen\n2. Vorhandenen Teilnehmer auswählen oder neuen Teilnehmer mit Kontaktdaten anlegen\n3. Disziplin wählen und Bemerkung eintragen\n4. Anmeldung speichern\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- creates `teilnehmer` (only when the flow needs it):\n    - `vorname`: the user enters it (bind it through the layer: form.field/…)\n    - `nachname`: the user enters it (bind it through the layer: form.field/…)\n    - `email`: the user enters it (bind it through the layer: form.field/…)\n    - `telefon`: the user enters it (bind it through the layer: form.field/…)\n    - `geburtsdatum`: the user enters it (bind it through the layer: form.field/…)\n    - `wohnort`: the user enters it (bind it through the layer: form.field/…)\n    - `skilllevel`: the user enters it (bind it through the layer: form.field/…)\n    - `stance`: the user enters it (bind it through the layer: form.field/…)\n    - `team`: the user enters it (bind it through the layer: form.field/…)\n    - `notfall_vorname`: the user enters it (bind it through the layer: form.field/…)\n    - `notfall_nachname`: the user enters it (bind it through the layer: form.field/…)\n    - `notfall_telefon`: the user enters it (bind it through the layer: form.field/…)\n- creates `anmeldungen`:\n    - `event`: from the record the user picks in this flow\n    - `teilnehmer`: from the record the user picks in this flow\n    - `anmeldedatum`: derived: today() — set it in the plan step, never ask\n    - `disziplin`: the user enters it (bind it through the layer: form.field/…)\n    - `zahlungsstatus`: fixed value `offen` — set it in the plan step's values, never ask\n    - `anmeldestatus`: fixed value `angemeldet` — set it in the plan step's values, never ask\n    - `bemerkung`: the user enters it (bind it through the layer: form.field/…)\n\n## Reads\n- `events` columns eventname, eventart, beginn, ort, max_teilnehmer, gebuehr\n\n## Checks BEFORE the write (block the submit with the message when they fail)\n- unique (field=`anmeldungen.teilnehmer`, scope=`anmeldungen.event`) — message: „Dieser Teilnehmer ist für das Event bereits angemeldet.“\n- required_context (field=`events.eventstatus`, must_equal=`anmeldung_offen`) — message: „Für dieses Event ist die Anmeldung nicht offen.“\n\n## Success page\n- shows: `anmeldungen.event`, `anmeldungen.teilnehmer`, `anmeldungen.anmeldestatus`\n- next flows to offer: `anmeldung-bestaetigen`\n\n## Never write these — another flow or a tool owns them\n- `anmeldungen.startnummer` (owner: intent `zahlung-erfassen`)\n- `events.eventname` (owner: intent `event-anlegen`)\n- `events.eventart` (owner: intent `event-anlegen`)\n- `events.beginn` (owner: intent `event-anlegen`)\n- `events.ende` (owner: intent `event-anlegen`)\n- `events.ort` (owner: intent `event-anlegen`)\n- `events.max_teilnehmer` (owner: intent `event-anlegen`)\n- `events.gebuehr` (owner: intent `event-anlegen`)\n- `events.eventstatus` (owner: intent `event-anlegen`)\n- `events.veranstalter` (owner: intent `event-anlegen`)\n- `events.eventbeschreibung` (owner: intent `event-anlegen`)\n"
+    },
+    {
+      "slug": "anmeldung-bestaetigen",
+      "label": {
+        "de": "Anmeldung bestätigen",
+        "en": "Confirm registration"
+      },
+      "description": "Offene Anmeldungen werden bestätigt oder auf die Warteliste gesetzt.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "anmeldungen",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "anmeldestatus": "user"
+          },
+          "multiple": false,
+          "needs": {},
+          "defaults": []
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `anmeldung-bestaetigen` — Anmeldung bestätigen\nOffene Anmeldungen werden bestätigt oder auf die Warteliste gesetzt.\n\n## Your hook — import it, never rebuild what it owns\n`import { useAnmeldungBestaetigenFlow } from '@/lib/journey/flows/AnmeldungBestaetigen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `anmeldungen`: `{...flow.picks.anmeldungen.select} {...flow.pick('anmeldungen')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Offene Anmeldung auswählen\n2. Anmeldestatus auf bestätigt oder Warteliste setzen\n3. Speichern\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- updates `anmeldungen`:\n    - `anmeldestatus`: the user enters it (bind it through the layer: form.field/…)\n\n## Reads\n- `anmeldungen` columns event, teilnehmer, disziplin, anmeldedatum, anmeldestatus\n\n## Success page\n- the review ends with ONE button per way to finish — spread `variants={flow.actions}` onto <SummaryStep>, never write your own confirm buttons: „Bestätigen“ sets anmeldestatus=bestaetigt; „Auf Warteliste setzen“ sets anmeldestatus=warteliste\n- the success page offers the way back — `undo={flow.undo}` on <SuccessStep>: „Bestätigung zurücknehmen“ sets anmeldestatus=angemeldet\n- shows: `anmeldungen.anmeldestatus`\n- next flows to offer: `zahlung-erfassen`\n\n## Never write these — another flow or a tool owns them\n- `teilnehmer.vorname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.nachname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.email` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.telefon` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.geburtsdatum` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.wohnort` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.skilllevel` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.stance` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.team` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_vorname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_nachname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_telefon` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.event` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.teilnehmer` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.anmeldedatum` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.disziplin` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.zahlungsstatus` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.bemerkung` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.startnummer` (owner: intent `zahlung-erfassen`)\n- `events.eventname` (owner: intent `event-anlegen`)\n- `events.eventart` (owner: intent `event-anlegen`)\n- `events.beginn` (owner: intent `event-anlegen`)\n- `events.ende` (owner: intent `event-anlegen`)\n- `events.ort` (owner: intent `event-anlegen`)\n- `events.max_teilnehmer` (owner: intent `event-anlegen`)\n- `events.gebuehr` (owner: intent `event-anlegen`)\n- `events.eventstatus` (owner: intent `event-anlegen`)\n- `events.veranstalter` (owner: intent `event-anlegen`)\n- `events.eventbeschreibung` (owner: intent `event-anlegen`)\n"
+    },
+    {
+      "slug": "zahlung-erfassen",
+      "label": {
+        "de": "Zahlung erfassen",
+        "en": "Record payment"
+      },
+      "description": "Eine Anmeldung mit offener Gebühr wird als bezahlt oder erlassen markiert und erhält bei Bedarf eine Startnummer.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "anmeldungen",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "zahlungsstatus": "user",
+            "startnummer": "user"
+          },
+          "multiple": false,
+          "needs": {},
+          "defaults": []
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `zahlung-erfassen` — Zahlung erfassen\nEine Anmeldung mit offener Gebühr wird als bezahlt oder erlassen markiert und erhält bei Bedarf eine Startnummer.\n\n## Your hook — import it, never rebuild what it owns\n`import { useZahlungErfassenFlow } from '@/lib/journey/flows/ZahlungErfassen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `anmeldungen`: `{...flow.picks.anmeldungen.select} {...flow.pick('anmeldungen')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Anmeldung mit offener Zahlung auswählen\n2. Zahlungsstatus bezahlt oder erlassen setzen\n3. Startnummer vergeben\n4. Speichern\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- updates `anmeldungen`:\n    - `zahlungsstatus`: the user enters it (bind it through the layer: form.field/…)\n    - `startnummer`: the user enters it (bind it through the layer: form.field/…)\n\n## Reads\n- `anmeldungen` columns event, teilnehmer, zahlungsstatus, startnummer, anmeldestatus\n\n## Checks BEFORE the write (block the submit with the message when they fail)\n- unique (field=`anmeldungen.startnummer`, scope=`anmeldungen.event`) — message: „Diese Startnummer ist im Event schon vergeben.“\n\n## Success page\n- the review ends with ONE button per way to finish — spread `variants={flow.actions}` onto <SummaryStep>, never write your own confirm buttons: „Als bezahlt erfassen“ sets zahlungsstatus=bezahlt; „Gebühr erlassen“ sets zahlungsstatus=erlassen\n- the success page offers the way back — `undo={flow.undo}` on <SuccessStep>: „Zahlung zurücknehmen“ sets zahlungsstatus=offen\n- shows: `anmeldungen.zahlungsstatus`, `anmeldungen.startnummer`\n\n## Never write these — another flow or a tool owns them\n- `teilnehmer.vorname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.nachname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.email` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.telefon` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.geburtsdatum` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.wohnort` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.skilllevel` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.stance` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.team` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_vorname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_nachname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_telefon` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.event` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.teilnehmer` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.anmeldedatum` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.disziplin` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.anmeldestatus` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.bemerkung` (owner: intent `teilnehmer-anmelden`)\n- `events.eventname` (owner: intent `event-anlegen`)\n- `events.eventart` (owner: intent `event-anlegen`)\n- `events.beginn` (owner: intent `event-anlegen`)\n- `events.ende` (owner: intent `event-anlegen`)\n- `events.ort` (owner: intent `event-anlegen`)\n- `events.max_teilnehmer` (owner: intent `event-anlegen`)\n- `events.gebuehr` (owner: intent `event-anlegen`)\n- `events.eventstatus` (owner: intent `event-anlegen`)\n- `events.veranstalter` (owner: intent `event-anlegen`)\n- `events.eventbeschreibung` (owner: intent `event-anlegen`)\n"
+    },
+    {
+      "slug": "event-anlegen",
+      "label": {
+        "de": "Event anlegen",
+        "en": "Create event"
+      },
+      "description": "Ein neues Event wird mit Ort, Zeitraum, Teilnehmerzahl und Gebühr angelegt.",
+      "priority": "nice",
+      "writes": [
+        {
+          "entity": "events",
+          "op": "create",
+          "when": "always",
+          "fields": {
+            "eventname": "user",
+            "eventart": "user",
+            "beginn": "user",
+            "ende": "user",
+            "ort": "picked",
+            "max_teilnehmer": "user",
+            "gebuehr": "user",
+            "eventstatus": "fixed:geplant",
+            "veranstalter": "user",
+            "eventbeschreibung": "user"
+          },
+          "multiple": false,
+          "needs": {},
+          "defaults": []
+        }
+      ],
+      "required": [
+        "events.max_teilnehmer"
+      ],
+      "brief": "# Flow `event-anlegen` — Event anlegen\nEin neues Event wird mit Ort, Zeitraum, Teilnehmerzahl und Gebühr angelegt.\n\n## Your hook — import it, never rebuild what it owns\n`import { useEventAnlegenFlow } from '@/lib/journey/flows/EventAnlegen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: ort), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Veranstaltungsort wählen\n2. Eventname, Art, Beginn und Ende eintragen\n3. Maximale Teilnehmerzahl, Gebühr und Veranstalter eintragen\n4. Speichern\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- creates `events`:\n    - `eventname`: the user enters it (bind it through the layer: form.field/…)\n    - `eventart`: the user enters it (bind it through the layer: form.field/…)\n    - `beginn`: the user enters it (bind it through the layer: form.field/…)\n    - `ende`: the user enters it (bind it through the layer: form.field/…)\n    - `ort`: from the record the user picks in this flow\n    - `max_teilnehmer`: the user enters it (bind it through the layer: form.field/…) — **REQUIRED in this flow** (mark it required and validate it before the step advances, whatever the app's base view says): tool `event-ausgebucht-setzen` → `eventstatus` cannot be built without it\n    - `gebuehr`: the user enters it (bind it through the layer: form.field/…)\n    - `eventstatus`: fixed value `geplant` — set it in the plan step's values, never ask\n    - `veranstalter`: the user enters it (bind it through the layer: form.field/…)\n    - `eventbeschreibung`: the user enters it (bind it through the layer: form.field/…)\n\n## Success page\n- shows: `events.eventname`, `events.beginn`, `events.eventstatus`\n- next flows to offer: `teilnehmer-anmelden`\n\n## Never write these — another flow or a tool owns them\n- `teilnehmer.vorname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.nachname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.email` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.telefon` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.geburtsdatum` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.wohnort` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.skilllevel` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.stance` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.team` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_vorname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_nachname` (owner: intent `teilnehmer-anmelden`)\n- `teilnehmer.notfall_telefon` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.event` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.teilnehmer` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.anmeldedatum` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.disziplin` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.zahlungsstatus` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.anmeldestatus` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.bemerkung` (owner: intent `teilnehmer-anmelden`)\n- `anmeldungen.startnummer` (owner: intent `zahlung-erfassen`)\n"
+    }
+  ],
+  "public_pages": [
+    {
+      "slug": "event-anmeldung",
+      "purpose": "Interessierte wählen ein Event mit offener Anmeldung, sehen Eventname, Art, Beginn, Ort und Gebühr, tragen ihre Daten ein und melden sich ohne Login an.",
+      "publish": true,
+      "lists": [
+        {
+          "entity": "events",
+          "columns": [
+            "eventname",
+            "eventart",
+            "beginn",
+            "ende",
+            "ort",
+            "gebuehr"
+          ],
+          "filter": {
+            "mode": "all",
+            "conditions": [
+              {
+                "field": "eventstatus",
+                "op": "eq",
+                "value": "anmeldung_offen"
+              }
+            ]
+          },
+          "max_records": null
+        }
+      ],
+      "creates": [
+        {
+          "entity": "teilnehmer",
+          "fields": {
+            "vorname": "user",
+            "nachname": "user",
+            "email": "user",
+            "telefon": "user",
+            "geburtsdatum": "user",
+            "wohnort": "user",
+            "skilllevel": "user",
+            "stance": "user",
+            "team": "user",
+            "notfall_vorname": "user",
+            "notfall_nachname": "user",
+            "notfall_telefon": "user"
+          },
+          "fixed": {}
+        },
+        {
+          "entity": "anmeldungen",
+          "fields": {
+            "event": "picked",
+            "teilnehmer": "picked",
+            "disziplin": "user",
+            "bemerkung": "user"
+          },
+          "fixed": {
+            "anmeldestatus": "angemeldet",
+            "zahlungsstatus": "offen"
+          }
+        }
+      ],
+      "visitor_fields": [],
+      "page_sets": [],
+      "brief": "# Public page `event-anmeldung`\nInteressierte wählen ein Event mit offener Anmeldung, sehen Eventname, Art, Beginn, Ort und Gebühr, tragen ihre Daten ein und melden sich ohne Login an.\n\n## Lists (declare exactly these in the surface)\n- `events`: columns `eventname`, `eventart`, `beginn`, `ende`, `ort`, `gebuehr`, filter {\"mode\": \"all\", \"conditions\": [{\"field\": \"eventstatus\", \"op\": \"eq\", \"value\": \"anmeldung_offen\"}]}\n\n## Creates (declare exactly these in the surface)\n- `teilnehmer`: visitor fields `vorname`, `nachname`, `email`, `telefon`, `geburtsdatum`, `wohnort`, `skilllevel`, `stance`, `team`, `notfall_vorname`, `notfall_nachname`, `notfall_telefon`\n- `anmeldungen`: visitor fields `event`, `teilnehmer`, `disziplin`, `bemerkung`; preset_fields {\"anmeldestatus\": \"angemeldet\", \"zahlungsstatus\": \"offen\"}\n\n## Link parameter (declare exactly this in the surface)\n- `link_param: { name: 'event', entity: 'events', label_field: 'eventname' }` — the page opens as `#/public/event-anmeldung?event=<id>` and reads THAT `events` record from its list endpoint; without the parameter it shows a short notice (never a list to pick from — the owner hands out one link per record).\n\n## Availability — mechanical, write nothing for it\nA picker (`useRecordSearch`) never offers a record another record already takes (a booked slot) — the layer leaves it out. To SHOW booked periods, call `useOccupancy(port, '<entity>')` and hand `blocked` to AvailabilityRangePicker; the integration gives the page exactly that read (dates or the reference, never who booked). Never declare a list of bookings with names or contacts to work availability out yourself.\n\nPublish: never from here — every page starts as a draft; the owner publishes it under Verwaltung → Öffentliche Seiten after the build (the plan wishes it published)\n"
+    }
+  ],
+  "tools": [
+    {
+      "id": "event-ausgebucht-setzen",
+      "purpose": "Läuft bei jeder Änderung oder Neuanlage einer Anmeldung. Zählt die bestätigten Anmeldungen des Events und vergleicht sie mit der maximalen Teilnehmerzahl. Ist das Event voll, wird es ausgebucht. Wird wieder ein Platz frei, geht ein ausgebuchtes Event zurück auf Anmeldung offen. Events ohne maximale Teilnehmerzahl bleiben unverändert."
+    },
+    {
+      "id": "event-ausgebucht-bei-neuer-anmeldung",
+      "purpose": "Läuft bei jeder neuen Anmeldung, auch über die öffentliche Seite. Prüft wie das Werkzeug bei Änderungen, ob das Event durch bestätigte Anmeldungen voll ist, und setzt es dann auf Ausgebucht."
+    },
+    {
+      "id": "events-abschliessen",
+      "purpose": "Täglich werden Events mit offener Anmeldung oder Ausbuchung, deren Ende vorbei ist, auf Abgeschlossen gesetzt."
+    },
+    {
+      "id": "anmeldungen-doppelt-verhindern",
+      "purpose": "Führt in anmeldungen einen später angelegten Datensatz mit derselben „Teilnehmer“ in den früheren zusammen (fehlende Werte übernehmen) und löscht dann den späteren — der frühere gilt"
+    }
+  ],
+  "covered_by_platform": [
+    {
+      "wish": "Listen und Suche für Events, Teilnehmer und Orte",
+      "feature": "list_page"
+    },
+    {
+      "wish": "Teilnehmerliste je Event als Tabelle oder Export",
+      "feature": "csv_json_export"
+    },
+    {
+      "wish": "Anzahl Anmeldungen je Event oder Status",
+      "feature": "distribution_view"
+    },
+    {
+      "wish": "Zugriff je Person",
+      "feature": "user_roles"
+    }
+  ],
+  "ownership": {
+    "teilnehmer": {
+      "vorname": "intent:teilnehmer-anmelden",
+      "nachname": "intent:teilnehmer-anmelden",
+      "email": "intent:teilnehmer-anmelden",
+      "telefon": "intent:teilnehmer-anmelden",
+      "geburtsdatum": "intent:teilnehmer-anmelden",
+      "wohnort": "intent:teilnehmer-anmelden",
+      "skilllevel": "intent:teilnehmer-anmelden",
+      "stance": "intent:teilnehmer-anmelden",
+      "team": "intent:teilnehmer-anmelden",
+      "notfall_vorname": "intent:teilnehmer-anmelden",
+      "notfall_nachname": "intent:teilnehmer-anmelden",
+      "notfall_telefon": "intent:teilnehmer-anmelden"
+    },
+    "anmeldungen": {
+      "event": "intent:teilnehmer-anmelden",
+      "teilnehmer": "intent:teilnehmer-anmelden",
+      "anmeldedatum": "intent:teilnehmer-anmelden",
+      "disziplin": "intent:teilnehmer-anmelden",
+      "zahlungsstatus": "intent:zahlung-erfassen",
+      "anmeldestatus": "intent:anmeldung-bestaetigen",
+      "bemerkung": "intent:teilnehmer-anmelden",
+      "startnummer": "intent:zahlung-erfassen"
+    },
+    "events": {
+      "eventname": "intent:event-anlegen",
+      "eventart": "intent:event-anlegen",
+      "beginn": "intent:event-anlegen",
+      "ende": "intent:event-anlegen",
+      "ort": "intent:event-anlegen",
+      "max_teilnehmer": "intent:event-anlegen",
+      "gebuehr": "intent:event-anlegen",
+      "eventstatus": "tool:events-abschliessen",
+      "veranstalter": "intent:event-anlegen",
+      "eventbeschreibung": "intent:event-anlegen"
+    }
+  },
+  "dashboard": {
+    "focus": [
+      "Kommende Events",
+      "Offene Anmeldungen",
+      "Unbezahlte Anmeldungen",
+      "Warteliste"
+    ],
+    "hints": [
+      "Events nach Beginn sortieren",
+      "Anmeldungen mit Status angemeldet hervorheben",
+      "Zahlungsstatus offen sichtbar machen"
+    ],
+    "views": [],
+    "writes": [],
+    "wishes": []
+  }
+}

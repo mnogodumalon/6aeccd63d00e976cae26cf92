@@ -1,0 +1,31 @@
+{
+  "pages": {
+    "en": {
+      "Aktuell ist kein Event geplant — lege das nächste an.": "No event is currently scheduled — create the next one.",
+      "Alle Anmeldungen sind bearbeitet.": "All registrations are processed.",
+      "Alle Gebühren sind beglichen.": "All fees are settled.",
+      "Alles bezahlt": "All paid",
+      "Als Nächstes: {0} am {1} — alle Anmeldungen sind bearbeitet.": "Next up: {0} on {1} — all registrations are processed.",
+      "Als Nächstes: {0} am {1} — {2} warten auf Bestätigung.": "Next up: {0} on {1} — {2} awaiting confirmation.",
+      "Angemeldet": "Registered",
+      "Anmeldung bestätigen": "Confirm registration",
+      "Anmeldung erfassen": "Record registration",
+      "Das nächste Event ist heute.": "The next event is today.",
+      "Das nächste Event startet in {0} Tagen.": "The next event starts in {0} days.",
+      "Event anlegen": "Create event",
+      "Keine kommenden Events.": "No upcoming events.",
+      "Kommende Events · Auslastung": "Upcoming events · Capacity",
+      "Neues Event": "New event",
+      "Niemand wartet auf einen Platz.": "Nobody is waiting for a spot.",
+      "Offene Anmeldungen": "Pending registrations",
+      "Unbezahlt": "Unpaid",
+      "Unbezahlte Anmeldungen": "Unpaid registrations",
+      "Warteliste": "Waitlist",
+      "Zahlung erfassen": "Record payment",
+      "Zahlung offen": "Payment pending",
+      "✓ Bestätigen": "✓ Confirm",
+      "✓ Bezahlt": "✓ Paid"
+    }
+  },
+  "v": 1
+}

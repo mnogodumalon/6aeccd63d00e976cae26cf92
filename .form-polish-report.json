@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "Veranstaltungsorte": {
+      "placeholders_set": 10,
+      "defaults_keys": [],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten eines Veranstaltungsortes ohne numerische Berechnungskette, daher keine Formeln und keine sinnvollen Standardwerte."
+    },
+    "Events": {
+      "placeholders_set": 8,
+      "defaults_keys": [
+        "beginn",
+        "ende",
+        "eventstatus"
+      ],
+      "computed_keys": [
+        "_event_dauer_stunden",
+        "max_teilnehmer"
+      ],
+      "reason": "Beginn/Ende ergeben eine Dauer in Stunden für die Zusammenfassung, und die maximale Teilnehmerzahl folgt der Kapazität des Veranstaltungsorts."
+    },
+    "Teilnehmer": {
+      "placeholders_set": 8,
+      "defaults_keys": [
+        "skilllevel"
+      ],
+      "computed_keys": [],
+      "reason": "Stammdaten von Teilnehmern ohne numerische Felder, daher keine Formeln."
+    },
+    "Anmeldungen": {
+      "placeholders_set": 6,
+      "defaults_keys": [
+        "anmeldedatum",
+        "zahlungsstatus",
+        "anmeldestatus"
+      ],
+      "computed_keys": [],
+      "reason": "Keine Formel, da es kein Mengen- oder Datumspaar gibt und die Teilnahmegebühr des Events ohne Anzahlfeld nur eine Kopie wäre."
+    }
+  }
+}

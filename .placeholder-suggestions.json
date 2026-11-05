@@ -1,0 +1,42 @@
+{
+  "VeranstaltungsorteDialog.tsx": {
+    "ortsname": "z. B. Skatehalle Mitte",
+    "strasse": "z. B. Rollstraße",
+    "hausnummer": "z. B. 12a",
+    "plz": "z. B. 10115",
+    "stadt": "z. B. Berlin",
+    "kapazitaet": "z. B. 250",
+    "kontakt_vorname": "z. B. Max",
+    "kontakt_nachname": "z. B. Mustermann",
+    "kontakt_email": "z. B. info@skatehalle.de",
+    "ortsbeschreibung": "Was zeichnet den Ort aus?"
+  },
+  "EventsDialog.tsx": {
+    "eventname": "z. B. Summer Skate Contest",
+    "beginn": "Wann beginnt das Event?",
+    "ende": "Wann endet das Event?",
+    "ort": "Welcher Veranstaltungsort?",
+    "max_teilnehmer": "z. B. 50",
+    "gebuehr": "z. B. 15",
+    "veranstalter": "z. B. Skate Crew Berlin",
+    "eventbeschreibung": "Was erwartet die Teilnehmer?"
+  },
+  "TeilnehmerDialog.tsx": {
+    "vorname": "z. B. Lena",
+    "nachname": "z. B. Becker",
+    "email": "z. B. lena@beispiel.de",
+    "geburtsdatum": "Wann wurde die Person geboren?",
+    "wohnort": "z. B. Hamburg",
+    "team": "z. B. Street Crew",
+    "notfall_vorname": "z. B. Anna",
+    "notfall_nachname": "z. B. Becker"
+  },
+  "AnmeldungenDialog.tsx": {
+    "event": "Welches Event?",
+    "teilnehmer": "Wer nimmt teil?",
+    "anmeldedatum": "Wann war die Anmeldung?",
+    "disziplin": "z. B. Street, Park, Bowl",
+    "startnummer": "z. B. 42",
+    "bemerkung": "Besonderheiten zur Anmeldung"
+  }
+}
